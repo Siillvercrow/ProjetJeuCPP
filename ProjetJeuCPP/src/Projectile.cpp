@@ -1,24 +1,25 @@
 #include "Projectile.h"
 
-Projectile::Projectile(const sf::Vector2f& startPosition, const sf::Texture& texture)
-    : speed(500.0f) {  
-    sprite.setTexture(texture);
-    sprite.setPosition(startPosition);
+Projectile::Projectile(const sf::Vector2f& startPosition, const sf::Vector2f& size, const sf::Color& color)
+    : speed(500.0f) { 
+    rectangle.setSize(size);
+    rectangle.setFillColor(color);
+    rectangle.setPosition(startPosition);
 }
 
 void Projectile::update(float deltaTime) {
     
-    sprite.move(0, -speed * deltaTime);
+    rectangle.move(0, -speed * deltaTime);
 }
 
 void Projectile::draw(sf::RenderWindow& window) const {
-    window.draw(sprite);
+    window.draw(rectangle);
 }
 
 bool Projectile::isOffScreen() const {
-    return sprite.getPosition().y + sprite.getGlobalBounds().height < 0;
+    return rectangle.getPosition().y + rectangle.getGlobalBounds().height < 0;
 }
 
-sf::FloatRect Projectile::getBounds() const {
-    return sprite.getGlobalBounds();
+sf::FloatRect Projectile::getGlobalBounds() const {
+    return rectangle.getGlobalBounds();
 }

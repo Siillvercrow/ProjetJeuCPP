@@ -1,7 +1,7 @@
 #include "GameManager.h"
 #include <iostream>
 
-GameManager::GameManager() : window(sf::VideoMode::getDesktopMode(), "Space Invaders", sf::Style::Fullscreen) {
+GameManager::GameManager() : window(sf::VideoMode::getDesktopMode(), "Space Invaders", sf::Style::Fullscreen), score(0), gameWon(false), gameLost(false) {
     window.setFramerateLimit(60);
     // Chargement des textures et gestion des erreurs appropriées
     if (!playerTexture.loadFromFile("res/img/Vaisseau.png") ||
@@ -10,7 +10,8 @@ GameManager::GameManager() : window(sf::VideoMode::getDesktopMode(), "Space Inva
         std::cerr << "Erreur de chargement des textures" << std::endl;
         throw std::runtime_error("Failed to load textures");
     }
-
+    gameUI.initialize(window.getSize());
+    gameUI.setScore(score);
     spawnPlayer(); // Initialisation du joueur
     spawnEnemies(); // Initialisation des ennemis
 }
@@ -37,13 +38,48 @@ void GameManager::run() {
 }
 
 void GameManager::spawnPlayer() {
-    player = Player(window.getSize(), playerTexture, projectileTexture);
+    sf::Vector2f projectileSize(5.0f, 30.0f); 
+    sf::Color projectileColor = sf::Color::White;
+    player = Player(window.getSize(), playerTexture, projectileSize, projectileColor);
 
+}
+
+bool GameManager::checkWinCondition() const {
+    return enemies.empty();
 }
 
 void GameManager::update(float deltaTime) {
     player.handleInput(); // Gestion des entrées du joueur
     player.update(deltaTime); // Mise à jour du joueur
+
+    if (!gameWon) {
+        if (player.isActive()) {
+            player.update(deltaTime);
+
+        }
+
+        for (auto& enemy : enemies) {
+            if (enemy->isActive()) {
+                enemy->update(deltaTime, window.getSize());
+                if (enemy->getGlobalBounds().intersects(player.getGlobalBounds()) ||
+                    enemy->getPosition().y + enemy->getGlobalBounds().height >= window.getSize().y) {
+                    std::cout << "Game lost condition met." << std::endl; // Pour le débogage
+                    player.destroy(); // Détruire le joueur
+                    for (auto& e : enemies) { e->destroy(); } // Détruire tous les ennemis
+                    //gameWon = true; // Utiliser gameWon pour indiquer la fin du jeu
+                    gameLost = true; // Indiquer que le jeu est perdu
+                    break;
+                }
+            }
+        }
+
+        handleCollisions();
+
+        if (checkWinCondition()) {
+            gameWon = true;
+            player.destroy();
+        }
+    }
 
     for (auto& enemy : enemies) {
         enemy->update(deltaTime, window.getSize()); // Mise à jour des ennemis
@@ -55,16 +91,34 @@ void GameManager::update(float deltaTime) {
 void GameManager::draw() {
     window.clear();
 
-    player.draw(window); // Dessiner le joueur
-   
-    for (auto& enemy : enemies) {
-        enemy->draw(window); // Dessiner les ennemis
+    
+    if (gameWon) {
+        gameUI.displayWinMessage(window);
+    }
+    else if (gameLost) {
+        
+        gameUI.displayLoseMessage(window);
+    }
+    else {
+        if (player.isActive()) {
+            player.draw(window);
+        }
+        for (auto& enemy : enemies) {
+            if (enemy->isActive()) {
+                enemy->draw(window);
+            }
+        }
     }
 
+    gameUI.draw(window);
     window.display();
 }
 
 void GameManager::handleCollisions() {
+    //if the game is won or lose, don't check for collisions
+    if (gameWon || gameLost) {
+		return;
+	}
     auto& projectiles = player.getProjectiles();
 
     // Parcourir tous les projectiles
@@ -73,11 +127,14 @@ void GameManager::handleCollisions() {
 
         // Parcourir tous les ennemis
         for (auto enemyIt = enemies.begin(); enemyIt != enemies.end() && !projectileErased;) {
-            if (projIt->getBounds().intersects((*enemyIt)->getBounds())) {
+            if (projIt->getGlobalBounds().intersects((*enemyIt)->getGlobalBounds())) {
                 // Collision détectée, supprimer l'ennemi et le projectile
                 enemyIt = enemies.erase(enemyIt);
                 projIt = projectiles.erase(projIt);
                 projectileErased = true;
+                score++;
+                std::cout << score << std::endl;
+                gameUI.setScore(score);
             }
             else {
                 ++enemyIt;
@@ -87,7 +144,10 @@ void GameManager::handleCollisions() {
         if (!projectileErased) {
             ++projIt;
         }
+
     }
+
+
 }
 
 void GameManager::spawnEnemies() {

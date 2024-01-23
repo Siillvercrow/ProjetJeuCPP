@@ -3,17 +3,19 @@
 
 #include <SFML/Graphics.hpp>
 
+//
+
 class Projectile {
 public:
-    Projectile(const sf::Vector2f& startPosition, const sf::Texture& texture);
+    Projectile(const sf::Vector2f& startPosition, const sf::Vector2f& size, const sf::Color& color);
     void update(float deltaTime);
     void draw(sf::RenderWindow& window) const;
     bool isOffScreen() const;
 
-    sf::FloatRect getBounds() const;
+    sf::FloatRect getGlobalBounds() const;
 
 private:
-    sf::Sprite sprite;
+    sf::RectangleShape rectangle;
     float speed;
 };
 

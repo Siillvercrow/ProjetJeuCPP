@@ -1,12 +1,12 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player() : speed(15.0f) {
+Player::Player() : speed(15.0f) , active(true) {
 	// Ne rien faire
 }
 
-Player::Player(const sf::Vector2u& windowSize, const sf::Texture& playerTexture, const sf::Texture& projTexture)
-    : speed(15.0f), projectileTexture(projTexture) {
+Player::Player(const sf::Vector2u& windowSize, const sf::Texture& playerTexture, const sf::Vector2f& projSize, const sf::Color& projColor)
+    : speed(5.0f), projectileSize(projSize), projectileColor(projColor), active(true) {
     sprite.setTexture(playerTexture);
     sprite.setPosition(windowSize.x / 2 - sprite.getGlobalBounds().width / 2,
         windowSize.y - sprite.getGlobalBounds().height);
@@ -32,9 +32,9 @@ void Player::update(float deltaTime) {
         // Créer le projectile à la base du vaisseau, centré sur sa largeur.
         sf::Vector2f startPosition(
             sprite.getPosition().x + sprite.getGlobalBounds().width / 2 - projectileTexture.getSize().x / 2,
-            sprite.getPosition().y - projectileTexture.getSize().y // Ajustez cette ligne pour changer la position de départ en y.
+            sprite.getPosition().y - projectileSize.y // Ajustez cette ligne pour changer la position de départ en y.
         );
-        projectiles.emplace_back(startPosition, projectileTexture);
+        projectiles.emplace_back(startPosition, projectileSize, projectileColor);
         shootTimer.restart();
     }
 
@@ -50,13 +50,27 @@ void Player::update(float deltaTime) {
     }
 }
 
+void Player::destroy() {
+    active = false; 
+}
+
+bool Player::isActive() const {
+    return active;
+}
+
 void Player::draw(sf::RenderWindow& window) {
     window.draw(sprite);
     for (auto& projectile : projectiles) {
+        
         projectile.draw(window);
     }
 }
 
 std::vector<Projectile>& Player::getProjectiles() {
     return projectiles;
+}
+
+
+sf::FloatRect Player::getGlobalBounds() const {
+	return sprite.getGlobalBounds();
 }

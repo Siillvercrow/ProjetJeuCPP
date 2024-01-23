@@ -142,6 +142,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Projectile.cpp" />
+    <ClCompile Include="src\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\img\Autres\Feature.png" />
@@ -196,6 +197,12 @@
     <ClInclude Include="include\GameManager.h" />
     <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\Projectile.h" />
+    <ClInclude Include="include\UI.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="res\space_invaders.ttf">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </Font>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

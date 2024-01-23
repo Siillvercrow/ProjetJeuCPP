@@ -9,7 +9,10 @@ public:
     Enemy(const sf::Vector2f& startPosition, const sf::Texture& texture);
     void update(float deltaTime, const sf::Vector2u& windowSize);
     void draw(sf::RenderWindow& window) const;
-    sf::FloatRect getBounds() const;
+    sf::FloatRect getGlobalBounds() const;
+    sf::Vector2f getPosition() const;
+    void destroy();
+    bool isActive() const;
 
 private:
     sf::Sprite sprite;
@@ -19,6 +22,7 @@ private:
     bool isMovingDown; 
     sf::Clock moveDownTimer; 
     const float moveDownDuration; 
+    bool active;
 };
 
 #endif // ENEMY_H

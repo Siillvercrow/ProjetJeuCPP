@@ -3,6 +3,7 @@
 
 #include "Player.h"
 #include "Enemy.h"
+#include "UI.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -10,8 +11,13 @@ class GameManager {
 public:
     GameManager();  // Le constructeur n'a pas besoin de paramètres maintenant
     void run();  // Cette méthode lance le jeu
+    UI gameUI;
+    int score;
+    bool checkWinCondition() const;
 
 private:
+    bool gameWon;
+    bool gameLost;
     sf::RenderWindow window;
     Player player;
     std::vector<Enemy*> enemies;

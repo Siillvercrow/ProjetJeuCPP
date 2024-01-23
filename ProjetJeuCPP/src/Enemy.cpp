@@ -2,7 +2,7 @@
 #include <GameManager.h>
 
 Enemy::Enemy(const sf::Vector2f& startPosition, const sf::Texture& texture)
-    : speed(100.0f),downWardSpeed(80.0f), direction(1), isMovingDown(false), moveDownDuration(1.0f){
+    : speed(100.0f),downWardSpeed(110.0f), direction(1), isMovingDown(false), moveDownDuration(1.0f){
     sprite.setTexture(texture);
     sprite.setPosition(startPosition);
 }
@@ -36,6 +36,21 @@ void Enemy::draw(sf::RenderWindow& window) const {
     window.draw(sprite);
 }
 
-sf::FloatRect Enemy::getBounds() const {
+sf::FloatRect Enemy::getGlobalBounds() const {
     return sprite.getGlobalBounds();
 }
+
+void Enemy::destroy() {
+    active = false;
+    
+}
+
+bool Enemy::isActive() const {
+    return active;
+}
+
+//get position
+sf::Vector2f Enemy::getPosition() const {
+	return sprite.getPosition();
+}
+
