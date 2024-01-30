@@ -2,7 +2,7 @@
 #include <GameManager.h>
 
 Enemy::Enemy(const sf::Vector2f& startPosition, const sf::Texture& texture)
-    : speed(100.0f),downWardSpeed(110.0f), direction(1), isMovingDown(false), moveDownDuration(1.0f){
+    : speed(150.0f),downWardSpeed(230.0f), direction(1), isMovingDown(false), moveDownDuration(1.0f){
     sprite.setTexture(texture);
     sprite.setPosition(startPosition);
 }
@@ -25,7 +25,7 @@ void Enemy::update(float deltaTime, const sf::Vector2u& windowSize) {
         sprite.move(speed * deltaTime * direction, 0);
 
         // Vérifier la collision avec les bords de l'écran
-        if (sprite.getPosition().x + sprite.getGlobalBounds().width >= windowSize.x || sprite.getPosition().x <= 0) {
+        if (sprite.getPosition().x + sprite.getGlobalBounds().width >= windowSize.x+1 || sprite.getPosition().x <= 1) {
             isMovingDown = true; // Commencer la descente
             moveDownTimer.restart(); // Démarrer le timer de descente
         }

@@ -1,6 +1,6 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
-
+#include "Menu.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "UI.h"
@@ -22,6 +22,8 @@ private:
     Player player;
     std::vector<Enemy*> enemies;
     sf::Texture playerTexture, projectileTexture, enemyTexture;
+    Menu menu;
+    bool isMenuActive;
 
     void update(float deltaTime);
     void draw();

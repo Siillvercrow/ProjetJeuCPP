@@ -6,7 +6,7 @@ Player::Player() : speed(15.0f) , active(true) {
 }
 
 Player::Player(const sf::Vector2u& windowSize, const sf::Texture& playerTexture, const sf::Vector2f& projSize, const sf::Color& projColor)
-    : speed(5.0f), projectileSize(projSize), projectileColor(projColor), active(true) {
+    : speed(0.5f), projectileSize(projSize), projectileColor(projColor), active(true) {
     sprite.setTexture(playerTexture);
     sprite.setPosition(windowSize.x / 2 - sprite.getGlobalBounds().width / 2,
         windowSize.y - sprite.getGlobalBounds().height);

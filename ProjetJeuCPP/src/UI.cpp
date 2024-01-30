@@ -39,6 +39,12 @@ void UI::initialize(sf::Vector2u windowSize) {
     sf::FloatRect textRectL = loseMessage.getLocalBounds();
     loseMessage.setOrigin(textRectL.width / 2.0f, textRectL.height / 2.0f);
     loseMessage.setPosition(static_cast<float>(windowSize.x) / 2.0f, static_cast<float>(windowSize.y) / 2.0f);
+
+    exitGame.setFont(font);
+    exitGame.setString("Quitter");
+    exitGame.setCharacterSize(30);
+    exitGame.setFillColor(sf::Color::White);
+    exitGame.setPosition(windowSize.x / 2 - exitGame.getLocalBounds().width / 2, windowSize.y / 2 + 200);
 }
 
 void UI::displayLoseMessage(sf::RenderWindow& window) {
@@ -58,4 +64,22 @@ void UI::draw(sf::RenderWindow& window) {
 
 void UI::displayWinMessage(sf::RenderWindow& window) {
     window.draw(winMessage);
+}
+
+void UI::displayExitMessage(sf::RenderWindow& window) {
+    window.draw(exitGame);
+}
+
+bool UI::isExitClicked(const sf::Vector2i& mousePos) const {
+    return exitGame.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
+}
+
+void UI::handleMouseHover(const sf::Vector2i& mousePos) {
+    // Gérer le survol pour le bouton "Quitter"
+    if (exitGame.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+        exitGame.setFillColor(sf::Color::Red); // Change la couleur en rouge lors du survol
+    }
+    else {
+        exitGame.setFillColor(sf::Color::White); // Retour à la couleur blanche par défaut
+    }
 }

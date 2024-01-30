@@ -1,8 +1,8 @@
 #include "GameManager.h"
 #include <iostream>
 
-GameManager::GameManager() : window(sf::VideoMode::getDesktopMode(), "Space Invaders", sf::Style::Fullscreen), score(0), gameWon(false), gameLost(false) {
-    window.setFramerateLimit(60);
+GameManager::GameManager() : window(sf::VideoMode::getDesktopMode(), "Space Invaders", sf::Style::Fullscreen), score(0), gameWon(false), gameLost(false), isMenuActive(true), menu(window.getSize()) {
+    
     // Chargement des textures et gestion des erreurs appropriées
     if (!playerTexture.loadFromFile("res/img/Vaisseau.png") ||
         !projectileTexture.loadFromFile("res/img/Projectiles/TireDroit.png") ||
@@ -29,11 +29,43 @@ void GameManager::run() {
 					window.close();
 				}
 			}
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (menu.isStartClicked(sf::Mouse::getPosition(window))) {
+                    isMenuActive = false; // Commencer le jeu
+                }
+
+                if (menu.isExitClicked(sf::Mouse::getPosition(window))) {
+                    window.close(); // Fermer le jeu
+                }
+            }
+            if (gameWon || gameLost) {
+                gameUI.handleMouseHover(sf::Mouse::getPosition(window)); // Gérer le survol
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                    if (gameUI.isExitClicked(sf::Mouse::getPosition(window))) {
+                        window.close(); // Fermer le jeu
+                    }
+                }
+            }
         }
 
         float deltaTime = clock.restart().asSeconds();
-        update(deltaTime); // Mise à jour du jeu
-        draw(); // Dessin du jeu
+        
+        window.clear();
+        if (isMenuActive) {
+            menu.draw(window);
+            menu.handleMouseHover(sf::Mouse::getPosition(window));
+        }
+        else {
+            
+            update(deltaTime); // Mise à jour du jeu
+            draw(); // Dessin du jeu
+        }
+
+
+
+        window.display();
+
+      
     }
 }
 
@@ -49,14 +81,10 @@ bool GameManager::checkWinCondition() const {
 }
 
 void GameManager::update(float deltaTime) {
-    player.handleInput(); // Gestion des entrées du joueur
-    player.update(deltaTime); // Mise à jour du joueur
 
-    if (!gameWon) {
-        if (player.isActive()) {
-            player.update(deltaTime);
-
-        }
+    if (!gameWon && !gameLost && !isMenuActive) {
+        player.handleInput(); // Gestion des entrées du joueur
+        player.update(deltaTime); // Mise à jour du joueur
 
         for (auto& enemy : enemies) {
             if (enemy->isActive()) {
@@ -81,9 +109,7 @@ void GameManager::update(float deltaTime) {
         }
     }
 
-    for (auto& enemy : enemies) {
-        enemy->update(deltaTime, window.getSize()); // Mise à jour des ennemis
-    }
+    
 
     handleCollisions(); // Gestion des collisions
 }
@@ -94,11 +120,14 @@ void GameManager::draw() {
     
     if (gameWon) {
         gameUI.displayWinMessage(window);
+        gameUI.displayExitMessage(window);
     }
     else if (gameLost) {
         
         gameUI.displayLoseMessage(window);
+        gameUI.displayExitMessage(window);
     }
+   
     else {
         if (player.isActive()) {
             player.draw(window);

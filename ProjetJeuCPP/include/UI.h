@@ -12,7 +12,10 @@ public:
     void displayWinMessage(sf::RenderWindow& window);
     void initialize(sf::Vector2u windowSize);
     void displayLoseMessage(sf::RenderWindow& window);
-
+    void displayExitMessage(sf::RenderWindow& window);
+    bool isExitClicked(const sf::Vector2i& mousePos) const;
+    sf::Text exitGame;
+    void handleMouseHover(const sf::Vector2i& mousePos);
 
 private:
     sf::Text winMessage;
